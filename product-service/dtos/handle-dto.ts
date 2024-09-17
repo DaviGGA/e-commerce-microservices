@@ -9,9 +9,12 @@ export function handleDTO<DTO, Schema extends z.ZodRawShape>
 ): HandleResponse<DTO> 
 {
   const validateSchema = schema.safeParse(data) as z.SafeParseReturnType<unknown, DTO>;
-
   if (validateSchema.error) {
-    return err(getZodMessages(validateSchema.error.issues), "", APIErrors.ZodParseError)
+    return err({
+      message: getZodMessages(validateSchema.error.issues),
+      stack: "",
+      name: APIErrors.ZodParseError
+    })
   }
 
   return success(validateSchema.data)

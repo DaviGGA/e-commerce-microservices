@@ -10,8 +10,8 @@ type Err = {message: string, stack: string, name: APIErrors}
 
 type ErrResponse = [Err, null];
 
-export function err(message: string, stack: string, name: APIErrors): ErrResponse {
-  return [{message, stack, name}, null];
+export function err(error: Err): ErrResponse {
+  return [error, null];
 }
 
 export type HandleResponse<T> = SuccessResponse<T> | ErrResponse; 

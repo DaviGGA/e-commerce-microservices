@@ -9,7 +9,6 @@ const createProductSchema = z.object({
   price: z
     .number()
     .positive("Price can't be zero or lower.")
-    .min(1, "Price is required.")
 })
 
 export type createProductDTO = {

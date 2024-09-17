@@ -8,20 +8,9 @@ export async function createProduct(req: Request,res: Response) {
 
   if(err) {
     return res.status(errorToCode[err.name])
-      .send({message: err.message, data: null})
+      .send({message: `${err.name}: ${err.message}`, data: null})
   }
 
   res.status(StatusCode.CREATED)
     .send({message: null, data: response});
-}
-
-interface Bolsonaro {
-  mitar(): void
-}
-
-class BolsonaroMito implements Bolsonaro {
-  mitar(): void {
-    throw new Error("Method not implemented.");
-  }
-  
 }
