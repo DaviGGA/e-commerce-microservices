@@ -4,7 +4,7 @@ import { errorToCode } from "../errors/api-error-to-code";
 import { StatusCode } from "../errors/status-code";
 
 export async function createProduct(req: Request,res: Response) {
-  const [err, response] = await service.createProduct(req.body);
+  const [err, data] = (await service.createProduct(req.body)).divide();
 
   if(err) {
     return res.status(errorToCode[err.name])
@@ -12,5 +12,5 @@ export async function createProduct(req: Request,res: Response) {
   }
 
   res.status(StatusCode.CREATED)
-    .send({message: null, data: response});
+    .send({message: null, data});
 }

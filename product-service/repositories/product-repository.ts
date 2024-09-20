@@ -2,15 +2,46 @@ import { MongoServerError } from "mongodb";
 import { createProductDTO } from "../dtos/create-product-dto";
 import { Product } from "../models/domain-product";
 import { mongooseProduct } from "../models/mongoose-product";
-import { HandleResponse, err, success } from "../utils/return-pattern";
+import { HandleResponse, err, success, Response } from "../utils/return-pattern";
 import { APIErrors } from "../errors/api-errors";
 
-export async function create(product: createProductDTO): Promise<HandleResponse<Product>> {
+// export async function create(product: createProductDTO): Promise<HandleResponse<Product>> {
+
+//   try {
+//     const createdProduct = await mongooseProduct.create(product);
+
+//     return success({
+//       id: String(createdProduct._id),
+//       name: createdProduct.name,
+//       price: createdProduct.price,
+//       quantity: createdProduct.quantity
+//     })
+    
+//   } catch (error: unknown) {
+//     if (error instanceof MongoServerError) {
+//       return err({
+//         message: error.errmsg,
+//         stack: "",
+//         name: APIErrors.MongoServerError
+//       })
+//     }
+
+//     return err({
+//       message: "Internal Server Error",
+//       stack: "",
+//       name: APIErrors.InternalServerError
+//     })
+//   }
+
+// }
+
+// Experiment
+export async function create(product: Response<createProductDTO>): Promise<Response<Product>> {
 
   try {
-    const createdProduct = await mongooseProduct.create(product);
+    const createdProduct = await mongooseProduct.create(product.data());
 
-    return success({
+    return Response.success({
       id: String(createdProduct._id),
       name: createdProduct.name,
       price: createdProduct.price,
@@ -18,15 +49,16 @@ export async function create(product: createProductDTO): Promise<HandleResponse<
     })
     
   } catch (error: unknown) {
+    console.log(error)
     if (error instanceof MongoServerError) {
-      return err({
+      return Response.err({
         message: error.errmsg,
         stack: "",
         name: APIErrors.MongoServerError
       })
     }
 
-    return err({
+    return Response.err({
       message: "Internal Server Error",
       stack: "",
       name: APIErrors.InternalServerError

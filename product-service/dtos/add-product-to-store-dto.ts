@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { handleDTO } from "./handle-dto";
-import { HandleResponse } from "../utils/return-pattern";
+import { HandleResponse, Response } from "../utils/return-pattern";
 
 const addProductToStoreSchema = z.object({
   productId: z
@@ -16,6 +16,6 @@ export type addProductToStoreDTO = {
   quantity: number
 }
 
-export function parseaAddProductBodyDTO(body: unknown): HandleResponse<addProductToStoreDTO> {
+export function parseaAddProductBodyDTO(body: unknown): Response<addProductToStoreDTO> {
   return handleDTO(body, addProductToStoreSchema);
 }

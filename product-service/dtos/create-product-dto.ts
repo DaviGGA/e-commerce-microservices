@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { handleDTO } from "./handle-dto";
-import { HandleResponse } from "../utils/return-pattern";
+import { HandleResponse, Response } from "../utils/return-pattern";
 
 const createProductSchema = z.object({
   name: z
@@ -16,6 +16,6 @@ export type createProductDTO = {
   price: number
 }
 
-export function parseProductDTO(product: unknown): HandleResponse<createProductDTO> {
+export function parseProductDTO(product: unknown): Response<createProductDTO> {
   return handleDTO(product, createProductSchema);
 }
