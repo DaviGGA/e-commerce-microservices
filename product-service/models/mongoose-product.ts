@@ -1,8 +1,9 @@
 import mongoose, { Document, Schema } from "mongoose";
 
-interface MongooseProduct extends Document {
+export interface MongooseProduct extends Document {
   name: string,
   price: number,
+  quantity: number,
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -10,6 +11,7 @@ interface MongooseProduct extends Document {
 const productSchema =  new Schema({
   name: {type: String, required: true, unique: true},
   price: {type: Number, required: true},
+  quantity: {type: Number, required: true, default: 0}
 }, {timestamps: true})
 
 export const mongooseProduct = 

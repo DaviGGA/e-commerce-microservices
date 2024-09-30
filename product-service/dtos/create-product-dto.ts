@@ -1,6 +1,6 @@
 import * as z from "zod";
 import { handleDTO } from "./handle-dto";
-import { HandleResponse } from "../utils/return-pattern";
+import { HandleResponse, Response } from "../utils/return-pattern";
 
 const createProductSchema = z.object({
   name: z
@@ -9,7 +9,6 @@ const createProductSchema = z.object({
   price: z
     .number()
     .positive("Price can't be zero or lower.")
-    .min(1, "Price is required.")
 })
 
 export type createProductDTO = {
@@ -17,6 +16,6 @@ export type createProductDTO = {
   price: number
 }
 
-export function parseProductDTO(product: unknown): HandleResponse<createProductDTO> {
+export function parseProductDTO(product: unknown): Response<createProductDTO> {
   return handleDTO(product, createProductSchema);
 }

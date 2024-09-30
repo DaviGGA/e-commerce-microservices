@@ -2,37 +2,130 @@ import { MongoServerError } from "mongodb";
 import { createProductDTO } from "../dtos/create-product-dto";
 import { Product } from "../models/domain-product";
 import { mongooseProduct } from "../models/mongoose-product";
-import { HandleResponse, err, success } from "../utils/return-pattern";
+import { HandleResponse, err, success, Response } from "../utils/return-pattern";
 import { APIErrors } from "../errors/api-errors";
 
-export async function create(product: createProductDTO): Promise<HandleResponse<Product>> {
+// export async function create(product: createProductDTO): Promise<HandleResponse<Product>> {
+
+//   try {
+//     const createdProduct = await mongooseProduct.create(product);
+
+//     return success({
+//       id: String(createdProduct._id),
+//       name: createdProduct.name,
+//       price: createdProduct.price,
+//       quantity: createdProduct.quantity
+//     })
+    
+//   } catch (error: unknown) {
+//     if (error instanceof MongoServerError) {
+//       return err({
+//         message: error.errmsg,
+//         stack: "",
+//         name: APIErrors.MongoServerError
+//       })
+//     }
+
+//     return err({
+//       message: "Internal Server Error",
+//       stack: "",
+//       name: APIErrors.InternalServerError
+//     })
+//   }
+
+// }
+
+// Experiment
+export async function create(product: Response<createProductDTO>): Promise<Response<Product>> {
 
   try {
-    const createdProduct = await mongooseProduct.create(product);
+    const createdProduct = await mongooseProduct.create(product.data());
 
-    return success({
+    return Response.success({
       id: String(createdProduct._id),
       name: createdProduct.name,
-      price: createdProduct.price
+      price: createdProduct.price,
+      quantity: createdProduct.quantity
     })
     
   } catch (error: unknown) {
+    console.log(error)
     if (error instanceof MongoServerError) {
-      return err(error.errmsg, "", APIErrors.MongoServerError);
+      return Response.err({
+        message: error.errmsg,
+        stack: "",
+        name: APIErrors.MongoServerError
+      })
     }
 
-    return err("Internal Server Error", "", APIErrors.InternalServerError)
+    return Response.err({
+      message: "Internal Server Error",
+      stack: "",
+      name: APIErrors.InternalServerError
+    })
   }
 
 }
 
 
-export async function findById(id: string): Promise<Product | null> {
-  const product = await mongooseProduct.findById(id);
-  return  product ? 
-  {
-    id: String(product._id),
-    name: product.name,
-    price: product.price
-  } : null;
+export async function findById(id: string): Promise<HandleResponse<Product | null>> {
+  try {
+    const foundProduct = await mongooseProduct.findById(id);
+
+    return foundProduct ?
+    success({
+      id: String(foundProduct._id),
+      name: foundProduct.name,
+      price: foundProduct.price,
+      quantity: foundProduct.quantity
+    }) : success (null)
+
+  } catch (error) {
+    return err({
+      message: "Internal Server Error",
+      stack: "",
+      name: APIErrors.InternalServerError
+    })
+  }
+
+}
+
+export async function findBy(condition: Partial<Product>): Promise<HandleResponse<Product | null>> {
+  try {
+    const foundProduct = await mongooseProduct.findOne(condition);
+
+    return foundProduct ?
+    success({
+      id: String(foundProduct._id),
+      name: foundProduct.name,
+      price: foundProduct.price,
+      quantity: foundProduct.quantity
+    }) : success (null)
+
+  } catch (error) {
+    return err({
+      message: "Internal Server Error",
+      stack: "",
+      name: APIErrors.InternalServerError
+    })
+  }
+
+}
+
+export async function updateProductQuantity(productId: string, quantity: number): Promise<HandleResponse<null>> {
+  try {
+    await mongooseProduct.updateOne(
+      {_id: productId},
+      {quantity}
+    )
+    return success(null)
+  } catch (error) {
+    return err({
+      message: "Internal Server Error",
+      stack: "",
+      name: APIErrors.InternalServerError
+    })
+  }
+
+  
 }
