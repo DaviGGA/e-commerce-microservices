@@ -1,25 +1,32 @@
+import { identity, pipe } from "fp-ts/lib/function";
 import { parseaAddProductBodyDTO } from "../dtos/add-product-to-store-dto";
 import { parseProductDTO } from "../dtos/create-product-dto";
 import { Product } from "../models/domain-product";
+import * as TE from "fp-ts/TaskEither"
+import * as O from "fp-ts/Option"
 import * as productRepository from "../repositories/product-repository"
-import { HandleResponse, err, success, Response } from "../utils/return-pattern";
+import { Err } from "../utils/return-pattern";
 
-// export async function createProduct(product: unknown): Promise<HandleResponse<Product>> {
-//   const [errProductDTO, productDTO] = parseProductDTO(product);  
-//   if (errProductDTO) return err(errProductDTO)
+export function createProduct(product: unknown): TE.TaskEither<Err,Product> {
+  return pipe(
+    product,
+    parseProductDTO,
+    TE.fromEither,
+    TE.flatMap(product => productRepository.create(product))
+  )
+}
 
-//   const [createError, createdProduct] = await productRepository.create(productDTO);
-//   if (createError) return err(createError)
-
-//   return success(createdProduct);
-// }
-
-// Experimental
-export async function createProduct(product: unknown): Promise<Response<Product>> {
-  const createdProduct = await parseProductDTO(product)
-    .bindAsync(productRepository.create)
-  console.log(createdProduct);
-  return createdProduct
+export function findProduct(productId: string): TE.TaskEither<Err,Product> {
+  return pipe(
+    productId,
+    productRepository.findById,
+    TE.chain(
+      O.match(
+        () => TE.left(({message: "Product not Found", stack: "", name: "NotFoundError"} as Err)),
+        product => TE.right(product)
+      )
+    )
+  )
 }
 
 // export async function addProductToStore(body: unknown): Promise<HandleResponse<null>> {

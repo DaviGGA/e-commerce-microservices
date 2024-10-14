@@ -1,6 +1,7 @@
 import * as z from "zod";
 import { handleDTO } from "./handle-dto";
-import { HandleResponse, Response } from "../utils/return-pattern";
+import * as E from "fp-ts/Either";
+import { Err } from "../utils/return-pattern";
 
 const addProductToStoreSchema = z.object({
   productId: z
@@ -16,6 +17,6 @@ export type addProductToStoreDTO = {
   quantity: number
 }
 
-export function parseaAddProductBodyDTO(body: unknown): Response<addProductToStoreDTO> {
+export function parseaAddProductBodyDTO(body: unknown): E.Either<Err, addProductToStoreDTO> {
   return handleDTO(body, addProductToStoreSchema);
 }

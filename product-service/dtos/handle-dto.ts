@@ -1,23 +1,37 @@
-import { z } from "zod";
-import { HandleResponse, err, success, Response } from "../utils/return-pattern";
+import { z, ZodError } from "zod";
+import * as E from "fp-ts/Either";
 import { APIErrors } from "../errors/api-errors";
+import { pipe } from "fp-ts/lib/function";
+import { makeMatch } from "ts-adt/MakeADT";
+import { Err } from "../utils/return-pattern";
 
 export function handleDTO<DTO, Schema extends z.ZodRawShape>
 (
   data: unknown,
   schema: z.ZodObject<Schema>
-): Response<DTO> 
+): E.Either<Err, DTO> 
 {
-  const validateSchema = schema.safeParse(data) as z.SafeParseReturnType<unknown, DTO>;
-  if (validateSchema.error) {
-    return Response.err({
-      message: getZodMessages(validateSchema.error.issues),
-      stack: "",
-      name: APIErrors.ZodParseError
-    })
-  }
+  //const validateSchema = schema.safeParse(data) as z.SafeParseReturnType<unknown, DTO>;
+  const validateSchemaTK = E.tryCatch(
+    () => schema.parse(data),
+    e => {
+      return e instanceof ZodError ?
+      e as ZodError : new Error(String(e)) 
+    }
+  )
 
-  return Response.success(validateSchema.data)
+  const matchError = makeMatch("name");
+
+  return pipe(
+    validateSchemaTK,
+    E.bimap(
+      matchError({
+        ZodError: e => ({message: e.message, stack: e.stack, name: APIErrors.ZodParseError}),
+        Error: e => ({message: e.message, stack: e.stack, name: APIErrors.InternalServerError})
+      }),
+      data => data as DTO
+    )
+  )
 }
 
 function getZodMessages(issues: z.ZodIssue[]) {

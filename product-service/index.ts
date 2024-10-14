@@ -8,10 +8,11 @@ const app = express();
 app.use(json());
 
 app.post("/product", controller.createProduct);
+app.get("/product/:id", controller.findProduct);
 
 mongooseconnect()
 
-app.listen(3005, () => {
+app.listen(3000, () => {
   console.log("Server open on port 3005")
 })
 

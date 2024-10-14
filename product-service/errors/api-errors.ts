@@ -1,6 +1,7 @@
-export enum APIErrors {
-  ZodParseError = "ZodParseError",
-  InternalServerError = "InternalServerError",
-  MongoServerError = "MongoServerError"
-}
+export const APIErrors = {
+  ZodParseError: "ZodParseError",
+  InternalServerError: "InternalServerError",
+  MongoServerError : "MongoServerError",
+  NotFoundError: "NotFoundError"
+} as const
 
