@@ -11,7 +11,6 @@ export function handleDTO<DTO, Schema extends z.ZodRawShape>
   schema: z.ZodObject<Schema>
 ): E.Either<Err, DTO> 
 {
-  //const validateSchema = schema.safeParse(data) as z.SafeParseReturnType<unknown, DTO>;
   const validateSchemaTK = E.tryCatch(
     () => schema.parse(data),
     e => {
