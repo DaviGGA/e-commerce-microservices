@@ -1,7 +1,7 @@
 import * as z from "zod";
 import { handleDTO } from "./handle-dto";
 import * as E from "fp-ts/Either";
-import { Err } from "../utils/return-pattern";
+import { Err } from "../utils/err";
 
 const addProductToStoreSchema = z.object({
   productId: z

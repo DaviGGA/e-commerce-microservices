@@ -5,9 +5,9 @@ import { Product } from "../models/domain-product";
 import * as TE from "fp-ts/TaskEither"
 import * as O from "fp-ts/Option"
 import * as productRepository from "../repositories/product-repository"
-import { Err } from "../utils/return-pattern";
+import { Err } from "../utils/err";
 
-export function createProduct(product: unknown): TE.TaskEither<Err,Product> {
+export function createProduct(product: unknown): TE.TaskEither<Err, Product> {
   return pipe(
     product,
     parseProductDTO,
@@ -16,7 +16,7 @@ export function createProduct(product: unknown): TE.TaskEither<Err,Product> {
   )
 }
 
-export function findProduct(productId: string): TE.TaskEither<Err,Product> {
+export function findProduct(productId: string): TE.TaskEither<Err, Product> {
   return pipe(
     productId,
     productRepository.findById,

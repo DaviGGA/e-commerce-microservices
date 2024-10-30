@@ -4,7 +4,7 @@ import { errorToCode } from "../errors/api-error-to-code";
 import { pipe } from "fp-ts/lib/function";
 import * as TE from "fp-ts/TaskEither"
 import { StatusCode } from "../errors/status-code";
-import { Err } from "../utils/return-pattern";
+import { Err } from "../utils/err";
 import { Product } from "../models/domain-product";
 
 export function createProduct(req: Request,res: Response) {

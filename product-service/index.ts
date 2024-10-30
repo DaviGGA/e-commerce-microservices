@@ -13,6 +13,6 @@ app.get("/product/:id", controller.findProduct);
 mongooseconnect()
 
 app.listen(3000, () => {
-  console.log("Server open on port 3005")
+  console.log("PRODUCT SERVER OPEN ON PORT 3001")
 })
 

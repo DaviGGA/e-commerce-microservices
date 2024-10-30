@@ -32,9 +32,3 @@ export function handleDTO<DTO, Schema extends z.ZodRawShape>
     )
   )
 }
-
-function getZodMessages(issues: z.ZodIssue[]) {
-  return issues
-    .map(issue => issue.message)
-    .join(", ")
-}
