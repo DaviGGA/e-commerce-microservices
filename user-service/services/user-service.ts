@@ -9,20 +9,35 @@ import { PasswordDontMatch } from "../errors/PasswordDontMatch";
 import { LoginDTO, parseLoginDTO } from "../dtos/login-dto";
 import { UserNotFound } from "../errors/UserNotFound";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 export function createUser(user: unknown): TE.TaskEither<Err, User> {
-const checkConfirmPassword = (user: createUserDTO) => user.password === user.confirmPassowrd;
+  const verifyPasswordMatching = TE.chain((userDTO: createUserDTO) => 
+    TE.fromPredicate(
+      isPasswordMatching, 
+      () => PasswordDontMatch)(userDTO)
+  )
+  const isPasswordMatching = (user: createUserDTO) => user.password === user.confirmPassword;
+
+  const userWithHashedPassword = TE.chain( (user: createUserDTO) =>
+    pipe(
+      encryptUserPassword(user),  
+      TE.map(hashedPassword => ({...user, hashedPassword}))
+    )
+  )
+  
+  const encryptUserPassword = (user: createUserDTO): TE.TaskEither<Err,string> => TE.tryCatch(
+    () => bcrypt.hash(user.password, 10),
+    _ => PasswordDontMatch
+  )
 
   return pipe(
     user,
     parseUserDTO,
     TE.fromEither,
-    TE.chain((userDTO: createUserDTO) => 
-    TE.fromPredicate(
-      checkConfirmPassword, 
-      () => PasswordDontMatch)(userDTO)
-    ),
-    TE.flatMap(userRepository.create)
+    verifyPasswordMatching,
+    userWithHashedPassword,
+    TE.flatMap(user => userRepository.create({...user, password: user.hashedPassword}))
   )
 }
 
@@ -36,7 +51,7 @@ export function login(loginUser: unknown): TE.TaskEither<Err,{token: string}> {
       userRepository.findBy({username: loginUser.username})),
     TE.chain(userExistOrErr),
     TE.chain((foundUser: User) => verifyPassword(foundUser, loginUser as LoginDTO)),
-    TE.chain(signToken),
+    TE.chain((user: User) => TE.of({ token: signToken(user)}))
   )
 }
 
@@ -49,11 +64,20 @@ const userExistOrErr = (userOption: O.Option<User>): TE.TaskEither<Err,User> =>
     )
   )
 
-const verifyPassword = (foundUser: User, loginUser: LoginDTO) => TE.fromPredicate(
-  () => foundUser.password === loginUser.password,
-  () => UserNotFound  
-)(foundUser);
+const comparePassword = (foundUser: User, loginUser: LoginDTO): TE.TaskEither<Err, boolean> => TE.tryCatch(
+  () => bcrypt.compare(foundUser.password, loginUser.password),
+  () => UserNotFound
+)
 
+const verifyPassword = (foundUser: User, loginUser: LoginDTO) =>
+  pipe(
+    comparePassword(foundUser, loginUser),
+    TE.fold(
+      err => TE.left(err),
+      _ => TE.right(foundUser)
+    )
+  )
+  
 const signToken = (user: User) =>
   jwt.sign(
     {

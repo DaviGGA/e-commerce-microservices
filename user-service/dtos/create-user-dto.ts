@@ -24,7 +24,7 @@ const createProductSchema = z.object({
 export type createUserDTO = {
   username: string,
   password: string,
-  confirmPassowrd: string
+  confirmPassword: string
 }
 
 export function parseUserDTO(user: unknown): E.Either<Err, createUserDTO> {

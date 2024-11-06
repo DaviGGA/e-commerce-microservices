@@ -4,6 +4,7 @@ export const APIErrors = {
   MongoServerError : "MongoServerError",
   NotFoundError: "NotFoundError",
   PasswordDontMatch: "PasswordDontMatch",
-  UserNotFound: "UserNotFound"
+  UserNotFound: "UserNotFound",
+  HashingPasswordError: "HashingPasswordError"
 } as const
 

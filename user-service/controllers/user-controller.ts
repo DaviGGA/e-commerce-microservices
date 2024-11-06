@@ -18,5 +18,11 @@ export function createUser(req: Request,res: Response) {
 }
 
 export function login(req: Request, res: Response) {
-  
+    return pipe(
+      service.login(req.body),
+      TE.fold(
+        (err: Err) => TE.fromIO(() => res.status(errorToCode[err.name]).send(err)),
+        (token) => TE.fromIO(() => res.status(StatusCode.CREATED).send(token))
+      )
+    )()
 }

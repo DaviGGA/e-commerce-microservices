@@ -5,5 +5,7 @@ export const errorToCode = {
   MongoServerError: StatusCode.INTERNAL_SERVER_ERROR,
   InternalServerError: StatusCode.INTERNAL_SERVER_ERROR,
   NotFoundError: StatusCode.NOT_FOUND,
-  PasswordDontMatch: StatusCode.BAD_REQUEST
+  PasswordDontMatch: StatusCode.BAD_REQUEST,
+  UserNotFound: StatusCode.NOT_FOUND,
+  HashingPasswordError: StatusCode.INTERNAL_SERVER_ERROR
 }

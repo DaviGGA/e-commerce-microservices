@@ -1,0 +1,22 @@
+{
+  "name": "api-gateway",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "express": "^4.21.1",
+    "express-http-proxy": "^2.1.1",
+    "ts-node": "^10.9.2",
+    "typecript": "^0.0.1-security"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/express-http-proxy": "^1.6.6"
+  }
+}
